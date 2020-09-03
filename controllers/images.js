@@ -20,7 +20,7 @@ exports.addImage = async (req, res) => {
 
     let imgnameQuery = "SELECT imgid FROM `image` WHERE imgname = '" + image_name + "'";
 
-    await req.db.query(imgnameQuery, (err, result) => {
+    db.query(imgnameQuery, (err, result) => {
         if (err) {
             console.log(err);
             return res.status(500).send(err);
@@ -39,7 +39,7 @@ exports.addImage = async (req, res) => {
                     return res.status(500).send(err);
                 }
                 let query = "INSERT INTO `image` (imgname, imgtype, imgtag) VALUES ('" + image_name + "', '" + fileExtension + "', '" + tags + "')";
-                req.db.query(query, (err, result) => {
+                db.query(query, (err, result) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
