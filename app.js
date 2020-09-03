@@ -27,12 +27,12 @@ if (process.env.CLOUD_SQL_CONNECTION_NAME) {
 const db = mysql.createConnection(config);
 
 // connect to DB
-// db.connect((err) => {
-//   if (err) {
-//     throw err;
-//   }
-//   console.log('Connected to database');
-// });
+db.connect((err) => {
+  if (err) {
+    throw err;
+  }
+  console.log('Connected to database');
+});
 global.db = db;
 
 // view engine setup
