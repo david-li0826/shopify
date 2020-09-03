@@ -1,0 +1,131 @@
+<% include partials/header.ejs %>
+    <div id="drop-area">
+        <form class="my-form">
+            <p>Upload multiple images with the file dialog or by dragging and dropping images onto the dashed region</p>
+            <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+            <label class="button" for="fileElem">Select some files</label>
+            <script>
+                // ************************ Drag and drop ***************** //
+                let dropArea = document.getElementById("drop-area")
+
+                    // Prevent default drag behaviors
+                ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, preventDefaults, false)
+                    document.body.addEventListener(eventName, preventDefaults, false)
+                })
+
+                // Highlight drop area when item is dragged over it
+                ;['dragenter', 'dragover'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, highlight, false)
+                })
+
+                ;['dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, unhighlight, false)
+                })
+
+                // Handle dropped files
+                dropArea.addEventListener('drop', handleDrop, false)
+
+                function preventDefaults (e) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                }
+
+                function highlight(e) {
+                    dropArea.classList.add('highlight')
+                }
+
+                function unhighlight(e) {
+                    dropArea.classList.remove('active')
+                }
+
+                function handleDrop(e) {
+                    var dt = e.dataTransfer
+                    var files = dt.files
+
+                    handleFiles(files)
+                }
+
+                function handleFiles(files) {
+                    files = [...files]
+                    files.forEach(previewFile)
+                }
+
+                function previewFile(file) {
+                    let reader = new FileReader()
+                    reader.readAsDataURL(file)
+                    reader.onloadend = function() {
+                        let img = document.createElement('img')
+                        img.src = reader.result
+                        document.getElementById('gallery').appendChild(img)
+                    }
+                }
+            </script>
+        </form>
+        <div id="gallery"></div>
+    </div>
+    <button id="upload-button">Upload</button>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+        $('#upload-button').click(function() {
+           $.ajax({
+               type: 'POST',
+               url: "/images/upload",
+               req: $('fileElem').prop('files')
+           });
+        });
+    </script>
+</div>
+</body>
+<style>
+    #drop-area {
+        border: 2px dashed #ccc;
+        border-radius: 20px;
+        width: 480px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+    #drop-area.highlight {
+        border-color: purple;
+    }
+    p {
+        margin-top: 0;
+    }
+    .my-form {
+        margin-bottom: 10px;
+    }
+    #gallery {
+        margin-top: 10px;
+    }
+    #gallery img {
+        width: 150px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    .button {
+        display: inline-block;
+        padding: 10px;
+        background: #ccc;
+        cursor: pointer;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .button:hover {
+        background: #ddd;
+    }
+    #upload-button {
+        display: inline-block;
+        padding: 10px;
+        background: #ccc;
+        cursor: pointer;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    #upload-button:hover {
+        background: #ddd;
+    }
+    #fileElem {
+        display: none;
+    }
+</style>
+</html>

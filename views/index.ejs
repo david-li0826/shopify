@@ -1,0 +1,33 @@
+<% include partials/header.ejs %>
+<div class="table-wrapper">
+  <% if (images.length > 0) { %>
+    <table class="table table-hovered">
+      <thead class="thead-dark">
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Image</th>
+        <th scope="col">Image Name</th>
+        <th scope="col">Image Tags</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% images.forEach((image, index) => { %>
+        <tr>
+          <th scope="row"><%= image.imgid %></th>
+          <td><img src="/assets/img/<%= image.imagename %>" class="rounded-circle image-img" alt=""></td>
+          <td><%= image.imgname %></td>
+          <td><%= image.imgtag %></td>
+          <td>
+            <a href="images/delete/<%= image.imgid %>" class="btn btn-sm btn-danger">Delete</a>
+          </td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p class="text-center">No images found. Go <a href="/images/upload" >here</a> to upload image.</p>
+  <% } %>
+</div>
+</div>
+</body>
+</html>
