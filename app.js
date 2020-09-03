@@ -11,6 +11,16 @@ const imageRouter = require('./routes/images')
 
 const app = express();
 
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
 // DB
 // [START cloud_sql_mysql_mysql_create_tcp]
 const createTcpPool = async (config) => {
@@ -103,17 +113,7 @@ app.use(async (req, res, next) => {
     console.log(err);
     return next(err);
   }
-})
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+});
 
 app.use(function (req, res, next) {
   req.db = db;
