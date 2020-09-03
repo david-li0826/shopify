@@ -14,5 +14,8 @@
     "monk": "^7.1.2",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "promise-mysql": "^4.1.3"
   }
 }

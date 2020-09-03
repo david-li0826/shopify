@@ -7,7 +7,7 @@ exports.addImagePage = (req, res) => {
     })
 }
 
-exports.addImage = (req, res) => {
+exports.addImage = async (req, res) => {
     if (!req.files) {
         return res.status(400).send("No files were uploaded");
     }
@@ -18,9 +18,9 @@ exports.addImage = (req, res) => {
     let fileExtension = uploadedFile.mimetype.split('/')[1];
     let tags = '';
 
-    let imgnameQuery = "SELECT imgid FROM `image` WHERE imgname = '" + image_name +"'";
+    let imgnameQuery = "SELECT imgid FROM `image` WHERE imgname = '" + image_name + "'";
 
-    db.query(imgnameQuery, (err, result) => {
+    await req.db.query(imgnameQuery, (err, result) => {
         if (err) {
             console.log(err);
             return res.status(500).send(err);
@@ -38,8 +38,8 @@ exports.addImage = (req, res) => {
                 if (err) {
                     return res.status(500).send(err);
                 }
-                let query = "INSERT INTO `image` (imgname, imgtype, imgtag) VALUES ('" + image_name +"', '" + fileExtension + "', '" + tags + "')";
-                db.query(query, (err, result) => {
+                let query = "INSERT INTO `image` (imgname, imgtype, imgtag) VALUES ('" + image_name + "', '" + fileExtension + "', '" + tags + "')";
+                req.db.query(query, (err, result) => {
                     if (err) {
                         return res.status(500).send(err);
                     }
