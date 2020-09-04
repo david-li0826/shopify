@@ -47,8 +47,7 @@ if (process.env.SQL_HOST) {
   }
 }
 
-let db = mysql.createConnection(config);
-db.connect();
+let db = mysql.createPool(config);
 global.db = db;
 
 app.use('/', indexRouter);
