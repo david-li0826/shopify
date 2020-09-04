@@ -28,11 +28,8 @@ app.use(fileUpload());
 let config = {
   user: process.env.SQL_USER,
   database: process.env.SQL_DATABASE,
-  password: process.env.SQL_PASSWORD
-}
-
-if (process.env.INSTANCE_CONNECTION_NAME && process.env.NODE_ENV === 'production') {
-  config.socketPath = `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`;
+  password: process.env.SQL_PASSWORD,
+  socketPath: `${dbSocketPath}/${process.env.INSTANCE_CONNECTION_NAME}`
 }
 
 let db = mysql.createConnection(config);
