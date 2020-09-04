@@ -5,6 +5,7 @@ exports.getHomePage = (req, res) => {
 
     db.query(query, (err, result) => {
         if (err) {
+            console.log(err);
             res.redirect('/');
         }
         res.render('index', {
