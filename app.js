@@ -25,12 +25,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload());
 
 // DB
-const dbSocketAddr = process.env.SQL_HOST.split(":");
 const dbSocketPath = process.env.DB_SOCKET_PATH || "/cloudsql";
 
 let config;
 
 if (process.env.SQL_HOST) {
+  const dbSocketAddr = process.env.SQL_HOST.split(":");
   config = {
     user: process.env.SQL_USER,
     database: process.env.SQL_DATABASE,
