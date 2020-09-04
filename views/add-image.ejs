@@ -6,74 +6,108 @@
             <label class="button" for="fileElem">Select some files</label>
             <script>
                 // ************************ Drag and drop ***************** //
-                let dropArea = document.getElementById("drop-area")
+                let dropArea = document.getElementById("drop-area");
 
                     // Prevent default drag behaviors
                 ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, preventDefaults, false)
-                    document.body.addEventListener(eventName, preventDefaults, false)
+                    dropArea.addEventListener(eventName, preventDefaults, false);
+                    document.body.addEventListener(eventName, preventDefaults, false);
                 })
 
                 // Highlight drop area when item is dragged over it
                 ;['dragenter', 'dragover'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, highlight, false)
+                    dropArea.addEventListener(eventName, highlight, false);
                 })
 
                 ;['dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, unhighlight, false)
+                    dropArea.addEventListener(eventName, unhighlight, false);
                 })
 
                 // Handle dropped files
-                dropArea.addEventListener('drop', handleDrop, false)
+                dropArea.addEventListener('drop', handleDrop, false);
 
                 function preventDefaults (e) {
-                    e.preventDefault()
-                    e.stopPropagation()
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
 
                 function highlight(e) {
-                    dropArea.classList.add('highlight')
+                    dropArea.classList.add('highlight');
                 }
 
                 function unhighlight(e) {
-                    dropArea.classList.remove('active')
+                    dropArea.classList.remove('active');
                 }
 
                 function handleDrop(e) {
-                    var dt = e.dataTransfer
-                    var files = dt.files
+                    let dt = e.dataTransfer;
+                    let files = dt.files;
 
-                    handleFiles(files)
+                    handleFiles(files);
                 }
 
                 function handleFiles(files) {
-                    files = [...files]
-                    files.forEach(previewFile)
+                    files = [...files];
+                    files.forEach(previewFile);
                 }
 
                 function previewFile(file) {
-                    let reader = new FileReader()
-                    reader.readAsDataURL(file)
+                    let reader = new FileReader();
+                    reader.readAsDataURL(file);
                     reader.onloadend = function() {
-                        let img = document.createElement('img')
-                        img.src = reader.result
-                        document.getElementById('gallery').appendChild(img)
+                        let img = document.createElement('img');
+                        img.src = reader.result;
+                        document.getElementById('gallery').appendChild(img);
                     }
                 }
             </script>
         </form>
         <div id="gallery"></div>
     </div>
-    <button id="upload-button">Upload</button>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
-        $('#upload-button').click(function() {
-           $.ajax({
-               type: 'POST',
-               url: "/images/upload",
-               req: $('fileElem').prop('files')
-           });
-        });
-    </script>
+    <div id="button-area">
+        <label class="upload-button" id="ub1">Upload</label>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                // bind the click event
+                $('.upload-button').bind("click", function (evt) {
+                    let files = $('#fileElem').prop('files');
+                    let requests = [];
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; i++) {
+                            let reader = new FileReader();
+                            let file = files[i];
+                            reader.readAsDataURL(file);
+                            reader.onloadend = function() {
+                                let img = reader.result.split(',')[1];
+                                let req = {
+                                    "name": file.name,
+                                    "type": file.type,
+                                    "image": img
+                                };
+                                requests.push($.ajax({
+                                    type: 'POST',
+                                    url: "/images/upload",
+                                    async: true,
+                                    data: JSON.stringify(req),
+                                    error: function (e) {
+                                        console.log(e);
+                                    },
+                                    dataType: "json",
+                                    contentType: "application/json"
+                                }));
+                            }
+                        }
+                    }
+                    $.when.apply($, requests).then(function () {
+                        alert("Upload Completed.");
+                        location.reload();
+                    });
+                    evt.preventDefault();
+                });
+            });
+        </script>
+    </div>
 </div>
 </body>
 <style>
@@ -113,7 +147,8 @@
     .button:hover {
         background: #ddd;
     }
-    #upload-button {
+    .upload-button {
+        margin-left: 20px;
         display: inline-block;
         padding: 10px;
         background: #ccc;
@@ -121,7 +156,7 @@
         border-radius: 5px;
         border: 1px solid #ccc;
     }
-    #upload-button:hover {
+    .upload-button:hover {
         background: #ddd;
     }
     #fileElem {

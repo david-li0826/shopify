@@ -8,7 +8,7 @@ exports.getHomePage = (req, res) => {
             res.redirect('/');
         }
         res.render('index', {
-            title: 'Welcome to Shopify Intern Challenge | View Images',
+            title: "Welcome to Shopify Intern Challenge - View Images",
             images: result
         });
     });

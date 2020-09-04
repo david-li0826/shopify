@@ -14,7 +14,11 @@
       <% images.forEach((image, index) => { %>
         <tr>
           <th scope="row"><%= image.imgid %></th>
-          <td><img src="/assets/img/<%= image.imagename %>" class="rounded-circle image-img" alt=""></td>
+          <td>
+              <a href="assets/images/<%= image.imgname %>" target="_blank">
+                <img src="assets/images/<%= image.imgname %>" class="image-img" alt="">
+              </a>
+          </td>
           <td><%= image.imgname %></td>
           <td><%= image.imgtag %></td>
           <td>
