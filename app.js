@@ -26,18 +26,10 @@ app.use(fileUpload());
 
 // DB
 let config = {
-  host: '127.0.0.1',
-  user: 'zh7li',
-  database: 'image_schema',
-  password: 'abcd1234',
-  port: '3306'
+  user: process.env.SQL_USER,
+  database: process.env.SQL_DATABASE,
+  password: process.env.SQL_PASSWORD
 }
-
-// let config = {
-//   user: process.env.SQL_USER,
-//   database: process.env.SQL_DATABASE,
-//   password: process.env.SQL_PASSWORD
-// }
 
 if (process.env.INSTANCE_CONNECTION_NAME && process.env.NODE_ENV === 'production') {
   config.socketPath = `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`;
