@@ -78,6 +78,7 @@
                             let reader = new FileReader();
                             let file = files[i];
                             reader.readAsDataURL(file);
+                            console.log(file.name);
                             reader.onloadend = function() {
                                 let img = reader.result.split(',')[1];
                                 let req = {
@@ -99,7 +100,7 @@
                             }
                         }
                     }
-                    $.when.apply($, requests).then(function () {
+                    $.when($, requests).done(function () {
                         alert("Upload Completed.");
                         location.reload();
                     });
@@ -109,7 +110,6 @@
         </script>
     </div>
 </div>
-</body>
 <style>
     #drop-area {
         border: 2px dashed #ccc;
@@ -163,4 +163,5 @@
         display: none;
     }
 </style>
+</body>
 </html>

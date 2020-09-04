@@ -13,4 +13,10 @@ router.post('/upload', imageController.addImage);
 /* delete image */
 router.get('/delete/:id', imageController.deleteImage);
 
+/* search image by text */
+router.post('/search', imageController.searchImageByText);
+
+/* search image by image */
+router.post('/searchByImage', imageController.searchImageByImage);
+
 module.exports = router;

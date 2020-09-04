@@ -1,4 +1,47 @@
 <% include partials/header.ejs %>
+<div class="search-wrapper">
+    <label class="search-label">Search by Image..</label>
+    <form class="search-form" action="/images/searchByImage" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" id="imagesearch" accept="image/*" onchange="this.form.submit()">
+    </form>
+    <form class="search-form" action="/images/search" method="post">
+        <input type="text" placeholder="Search by Text.." name="searchText" id="textsearch">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+    <style>
+        .search-label {
+            margin-right: 10px;
+            font-size: 15px;
+        }
+        #imagesearch {
+            font-size: 15px;
+        }
+        .search-form {
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        .search-wrapper {
+            margin-bottom: 10px;
+            margin-top: 20px;
+            margin-left: 10px;
+        }
+        .search-button {
+            display: inline-block;
+            padding: 10px;
+            background: #ccc;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .search-button:hover {
+            background: #ddd;
+        }
+        #textsearch {
+            padding: 8px;
+            font-size: 15px;
+        }
+    </style>
+</div>
 <div class="table-wrapper">
   <% if (images.length > 0) { %>
     <table class="table table-hovered">
@@ -28,6 +71,13 @@
       <% }) %>
       </tbody>
     </table>
+    <style>
+        table {
+            width: 100%;
+            table-layout: fixed;
+            word-break: break-all;
+        }
+    </style>
   <% } else { %>
     <p class="text-center">No images found. Go <a href="/images/upload" >here</a> to upload image.</p>
   <% } %>
