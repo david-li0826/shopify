@@ -25,11 +25,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload());
 
 // DB
+const dbSocketAddr = process.env.SQL_HOST.split(":");
+
 let config = {
   user: process.env.SQL_USER,
   database: process.env.SQL_DATABASE,
   password: process.env.SQL_PASSWORD,
-  socketPath: `${dbSocketPath}/${process.env.INSTANCE_CONNECTION_NAME}`
+  host: dbSocketAddr[0],
+  port: dbSocketAddr[1]
 }
 
 let db = mysql.createConnection(config);
