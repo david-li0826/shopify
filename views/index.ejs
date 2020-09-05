@@ -5,7 +5,7 @@
         <input type="file" name="image" id="imagesearch" accept="image/*" onchange="this.form.submit()">
     </form>
     <form class="search-form" action="/images/search" method="post">
-        <input type="text" placeholder="Search by Text.." name="searchText" id="textsearch">
+        <input type="text" placeholder="Search by Text/Trait.." name="searchText" id="textsearch">
         <button type="submit" class="search-button">Search</button>
     </form>
     <style>
@@ -51,6 +51,7 @@
         <th scope="col">Image</th>
         <th scope="col">Image Name</th>
         <th scope="col">Image Tags</th>
+        <th scope="col">Image Texts</th>
       </tr>
       </thead>
       <tbody>
@@ -64,6 +65,7 @@
           </td>
           <td><%= image.imgname %></td>
           <td><%= image.imgtag %></td>
+          <td><%= image.imgtext %></td>
           <td>
             <a href="images/delete/<%= image.imgid %>" class="btn btn-sm btn-danger">Delete</a>
           </td>

@@ -27,6 +27,9 @@ async function label(publicUrl, maxres) {
             {
                 "type":"LABEL_DETECTION",
                 "maxResults":maxres
+            },
+            {
+                "type":"DOCUMENT_TEXT_DETECTION"
             }
         ]
     }
@@ -34,21 +37,32 @@ async function label(publicUrl, maxres) {
     // performs label detection on the image file
     const [result] = await client.annotateImage(request);
     const labels = result.labelAnnotations;
+    const detections = result.textAnnotations;
     console.log('Labels:');
     let tags = [];
     labels.forEach(label => {
         console.log(label.description)
         tags.push(label.description)
     });
-    return tags.join(',');
+    console.log('Text:');
+    let texts = '';
+    if (detections.length > 0) {
+        console.log(detections[0].description);
+        texts = detections[0].description;
+    }
+    return {
+        tags: tags.join(','),
+        texts: texts
+    };
 }
 
-function dbadd(req, res, image_name, fileExtension, tags, publicUrl) {
-    let query = "INSERT INTO `image` (imgname, imgtype, imgtag, imgurl) VALUES ('" + image_name + "', '" + fileExtension + "', '" + tags + "', '" + publicUrl + "')";
+function dbadd(req, res, image_name, fileExtension, tags, publicUrl, texts) {
+    console.log('texts: ' + texts);
+    let query = "INSERT INTO `image` (imgname, imgtype, imgtag, imgurl, imgtext) VALUES ('" + image_name + "', '" + fileExtension + "', '" + tags + "', '" + publicUrl + "', QUOTE('" + texts + "'))";
     db.query(query, (err, result) => {
         if (err) {
-            console.log('DB error');
-            return res.status(500).send(err);
+            console.log('DB error' + err);
+            return res.status(500);
         }
         console.log('DB entry created');
     });
@@ -95,13 +109,12 @@ exports.addImage = async (req, res) => {
                     );
                     label(publicUrl, 3)
                         .then(result => {
-                            console.log(image_name + ': ' + result);
-                            dbadd(req, res, image_name, fileExtension, result, publicUrl);
+                            dbadd(req, res, image_name, fileExtension, result.tags, publicUrl, result.texts);
                         })
                         .catch(err => {
                             console.log(err);
-                            dbadd(req, res, image_name, fileExtension, '', publicUrl);
-                        })
+                            dbadd(req, res, image_name, fileExtension, '', publicUrl, '');
+                        });
                 });
         }
     });
@@ -171,14 +184,16 @@ exports.searchImageByText = (req, res) => {
             let imgid = image.imgid;
             let tags = image.imgtag.split(',');
             tags.push(image.imgname.split('.')[0]);
-            const fuse = new Fuse(tags);
-            let len = t.length - 1;
+            let texts = image.imgtext;
+            tags.push(texts);
+            let len = t.length;
             const options = {
+                includeScore: true,
                 thresholds: 0.01,
                 minMatchCharLength: len,
-                includeScore: true
-            }
-            const fuzzy = fuse.search(t, options);
+            };
+            const fuse = new Fuse(tags, options);
+            const fuzzy = fuse.search(t);
             console.log(fuzzy);
             if (fuzzy.length > 0) {
                 list.push(imgid);
@@ -268,16 +283,16 @@ exports.searchImageByImage = (req, res) => {
                         let imgid = image.imgid;
                         let tags = image.imgtag.split(',');
                         tags.push(image.imgname.split('.')[0]);
-                        const fuse = new Fuse(tags);
                         for (let i = 0; i < listOfSearchTags.length; i++) {
                             let t = listOfSearchTags[i];
-                            let len = t.length - 1;
+                            let len = t.length;
                             const options = {
                                 thresholds: 0.01,
                                 minMatchCharLength: len,
-                                includeScore: true
+                                includeScore: true,
                             }
-                            const fuzzy = fuse.search(t, options);
+                            const fuse = new Fuse(tags, options);
+                            const fuzzy = fuse.search(t);
                             console.log(fuzzy);
                             if (fuzzy.length > 0) {
                                 list.push(imgid);
