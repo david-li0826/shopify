@@ -4,6 +4,7 @@
             <p>Upload multiple images with the file dialog or by dragging and dropping images onto the dashed region</p>
             <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
             <label class="button" for="fileElem">Select some files</label>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script>
                 // ************************ Drag and drop ***************** //
                 let dropArea = document.getElementById("drop-area");
@@ -48,6 +49,7 @@
 
                 function handleFiles(files) {
                     files = [...files];
+                    files.forEach(uploadFile);
                     files.forEach(previewFile);
                 }
 
@@ -58,6 +60,30 @@
                         let img = document.createElement('img');
                         img.src = reader.result;
                         document.getElementById('gallery').appendChild(img);
+                    }
+                }
+
+                function uploadFile(file, i) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function() {
+                        let img = reader.result.split(',')[1];
+                        let req = {
+                            "name": file.name,
+                            "type": file.type,
+                            "image": img
+                        };
+                        $.ajax({
+                            type: 'POST',
+                            url: "/images/upload",
+                            async: true,
+                            data: JSON.stringify(req),
+                            error: function (e) {
+                                console.log(e);
+                            },
+                            dataType: "json",
+                            contentType: "application/json"
+                        });
                     }
                 }
             </script>
@@ -71,40 +97,9 @@
             $(document).ready(function() {
                 // bind the click event
                 $('.upload-button').bind("click", function (evt) {
-                    let files = $('#fileElem').prop('files');
-                    let requests = [];
-                    if (files.length > 0) {
-                        for (let i = 0; i < files.length; i++) {
-                            let reader = new FileReader();
-                            let file = files[i];
-                            reader.readAsDataURL(file);
-                            console.log(file.name);
-                            reader.onloadend = function() {
-                                let img = reader.result.split(',')[1];
-                                let req = {
-                                    "name": file.name,
-                                    "type": file.type,
-                                    "image": img
-                                };
-                                requests.push($.ajax({
-                                    type: 'POST',
-                                    url: "/images/upload",
-                                    async: true,
-                                    data: JSON.stringify(req),
-                                    error: function (e) {
-                                        console.log(e);
-                                    },
-                                    dataType: "json",
-                                    contentType: "application/json"
-                                }));
-                            }
-                        }
-                    }
-                    $.when($, requests).done(function () {
-                        alert("Upload Completed.");
-                        location.reload();
-                    });
                     evt.preventDefault();
+                    alert("All images uploaded!");
+                    window.location.href = "/";
                 });
             });
         </script>

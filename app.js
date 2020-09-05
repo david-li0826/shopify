@@ -1,4 +1,3 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -6,6 +5,8 @@ const logger = require('morgan');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
+
+const {Storage} = require('@google-cloud/storage');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -49,6 +50,12 @@ if (process.env.SQL_HOST) {
 
 let db = mysql.createPool(config);
 global.db = db;
+
+// Instantiate a storage client
+const storage = new Storage();
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+
+global.bucket = bucket;
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

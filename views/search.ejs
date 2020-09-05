@@ -61,8 +61,8 @@
                 <tr>
                     <th scope="row"><%= image.imgid %></th>
                     <td>
-                        <a href="/assets/images/<%= image.imgname %>" target="_blank">
-                            <img src="/assets/images/<%= image.imgname %>" class="image-img" alt="">
+                        <a href="<%= image.imgurl %>" target="_blank">
+                            <img src="<%= image.imgurl %>" class="image-img" alt="">
                         </a>
                     </td>
                     <td><%= image.imgname %></td>
@@ -82,7 +82,7 @@
             }
         </style>
     <% } else { %>
-        <p class="text-center">No images found. Go <a href="/" >here</a> view all images.</p>
+        <p class="text-center">No images found. Go <a href="/" >here</a> to view all images.</p>
     <% } %>
 </div>
 </div>
