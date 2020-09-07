@@ -30,6 +30,7 @@ const dbSocketPath = process.env.DB_SOCKET_PATH || "/cloudsql";
 
 let config;
 
+// when developing locally, use Google Cloud SQL public host to connect DB
 if (process.env.SQL_HOST) {
   const dbSocketAddr = process.env.SQL_HOST.split(":");
   config = {
@@ -39,7 +40,9 @@ if (process.env.SQL_HOST) {
     host: dbSocketAddr[0],
     port: dbSocketAddr[1]
   }
-} else {
+}
+// when deploying on App Engine, use unix socket to connect DB
+else {
   config = {
     user: process.env.SQL_USER,
     database: process.env.SQL_DATABASE,
@@ -51,7 +54,7 @@ if (process.env.SQL_HOST) {
 let db = mysql.createPool(config);
 global.db = db;
 
-// Instantiate a storage client
+// Instantiate a storage client for Google Cloud Storage
 const storage = new Storage();
 const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
 

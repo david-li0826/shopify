@@ -10,6 +10,12 @@ exports.addImagePage = (req, res) => {
     })
 }
 
+/**
+ * Label and OCR for the uploading image
+ * @param publicUrl
+ * @param maxres
+ * @returns {Promise<{texts: string, tags: string}>}
+ */
 async function label(publicUrl, maxres) {
     const vision = require('@google-cloud/vision');
     console.log(publicUrl);
@@ -17,6 +23,7 @@ async function label(publicUrl, maxres) {
     // create a client
     const client = new vision.ImageAnnotatorClient();
 
+    // specify request for Google Vision
     let request = {
         "image":{
             "source": {
@@ -34,7 +41,7 @@ async function label(publicUrl, maxres) {
         ]
     }
 
-    // performs label detection on the image file
+    // performs label detection and text recognition on the image file
     const [result] = await client.annotateImage(request);
     const labels = result.labelAnnotations;
     const detections = result.textAnnotations;
@@ -56,6 +63,17 @@ async function label(publicUrl, maxres) {
     };
 }
 
+/**
+ * Add image and its labels and recognized texts to DB
+ * @param req
+ * @param res
+ * @param image_name
+ * @param fileExtension
+ * @param tags
+ * @param publicUrl
+ * @param texts
+ * @returns {*}
+ */
 function dbadd(req, res, image_name, fileExtension, tags, publicUrl, texts) {
     console.log('texts: ' + texts);
     let query = "INSERT INTO `image` (imgname, imgtype, imgtag, imgurl, imgtext) VALUES ('" + image_name + "', '" + fileExtension + "', '" + tags + "', '" + publicUrl + "', QUOTE('" + texts + "'))";
@@ -120,6 +138,11 @@ exports.addImage = async (req, res) => {
     });
 }
 
+/**
+ * Delete image file from Google Cloud Storage
+ * @param filename
+ * @returns {Promise<void>}
+ */
 async function deleteFile(filename) {
     await bucket.file(filename).delete({
         force: true
@@ -186,7 +209,7 @@ exports.searchImageByText = (req, res) => {
             tags.push(image.imgname.split('.')[0]);
             let texts = image.imgtext;
             tags.push(texts);
-            let len = t.length;
+            let len = t.length < 4 ? t.length : 4;
             const options = {
                 includeScore: true,
                 thresholds: 0.01,
@@ -219,6 +242,12 @@ exports.searchImageByText = (req, res) => {
     });
 }
 
+/**
+ * Label detection for the image used to search for similar images in the DB
+ * @param tmpPath
+ * @param maxres
+ * @returns {Promise<string>}
+ */
 async function labelTmp(tmpPath, maxres) {
     const vision = require('@google-cloud/vision');
     console.log(tmpPath);
@@ -226,6 +255,7 @@ async function labelTmp(tmpPath, maxres) {
     // create a client
     const client = new vision.ImageAnnotatorClient();
 
+    // specify Google Vision request
     let request = {
         "image":{
             "source": {
@@ -287,7 +317,7 @@ exports.searchImageByImage = (req, res) => {
                             let t = listOfSearchTags[i];
                             let len = t.length;
                             const options = {
-                                thresholds: 0.01,
+                                thresholds: 0.1,
                                 minMatchCharLength: len,
                                 includeScore: true,
                             }
