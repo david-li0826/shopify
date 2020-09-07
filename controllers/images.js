@@ -209,10 +209,10 @@ exports.searchImageByText = (req, res) => {
             tags.push(image.imgname.split('.')[0]);
             let texts = image.imgtext;
             tags.push(texts);
-            let len = t.length < 4 ? t.length : 4;
+            let len = t.length < 3 ? t.length : t.length-1;
             const options = {
                 includeScore: true,
-                thresholds: 0.1,
+                thresholds: 0.01,
                 minMatchCharLength: len,
             };
             const fuse = new Fuse(tags, options);
