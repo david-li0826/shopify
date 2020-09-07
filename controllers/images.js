@@ -212,7 +212,7 @@ exports.searchImageByText = (req, res) => {
             let len = t.length < 4 ? t.length : 4;
             const options = {
                 includeScore: true,
-                thresholds: 0.01,
+                thresholds: 0.1,
                 minMatchCharLength: len,
             };
             const fuse = new Fuse(tags, options);
